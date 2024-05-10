@@ -23,6 +23,7 @@ def loginPage(request):
     if request.user.is_authenticated:
         return redirect('home')
     
+    
     # getting the username and password
     if request.method == "POST":
         username = request.POST.get('username').lower()
@@ -45,10 +46,10 @@ def loginPage(request):
     return render(request, 'base/login_register.html', context)
     
         
-
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
 
 def registerPage(request):
     page = 'register' 
@@ -66,7 +67,6 @@ def registerPage(request):
             
     return render(request, 'base/login_register.html', {'form':form})
             
-            
 
 def home(request):
     q= request.GET.get('q') if request.GET.get('q') != None else ''
@@ -79,7 +79,7 @@ def home(request):
     
     topics = Topic.objects.all()
     room_count = rooms.count()
-    room_messages = Message.objects.all()
+    room_messages =  Message.objects.filter(Q(room__topic__name__icontains=q))
     
     context = {'rooms':rooms, 'topics': topics, 'room_count':room_count,
                'room_messages':room_messages}
@@ -88,7 +88,7 @@ def home(request):
 
 def room(request, pk):
     room = Room.objects.get(id=pk)
-    room_messages = room.message_set.all().order_by('-created')
+    room_messages = room.message_set.all()
     participants = room.participants.all()
     
     if request.method == "POST":
