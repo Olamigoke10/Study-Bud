@@ -55,15 +55,15 @@ def registerPage(request):
     page = 'register' 
     form = UserCreationForm()
     if request.method == "POST":
-     form = UserCreationForm(request.POST)
-    if form.is_valid():
-        user = form.save(commit=False)
-        user.username = user.username.lower()
-        user.save()
-        login(request, user)
-        return redirect('home')
-    else:
-        messages.error(request, "An Error Ocurred during Registration")
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, "An Error Ocurred during Registration")
             
     return render(request, 'base/login_register.html', {'form':form})
             
