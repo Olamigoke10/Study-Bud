@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic, Message
 from .forms import RoomForm, UserForm
+from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 
@@ -51,13 +52,13 @@ def logoutUser(request):
     return redirect('home')
 
 
-def registerPage(request):
-    page = 'register' 
+def registerPage(request): 
     form = UserCreationForm()
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            print(user)
             user.username = user.username.lower()
             user.save()
             login(request, user)

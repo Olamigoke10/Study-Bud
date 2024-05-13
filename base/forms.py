@@ -14,3 +14,4 @@ class UserForm(ModelForm):
     class Meta:
         model = User  # Use your User model here
         fields = ['username', 'email']
+
