@@ -141,12 +141,17 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Vercel omits gitignored build output from the serverless bundle, so collected
+# staticfiles/ often never reaches production. Finders serve from STATICFILES_DIRS
+# (the committed static/ tree) instead.
+WHITENOISE_USE_FINDERS = True
+
 STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
     },
 }
 
