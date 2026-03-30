@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
 
@@ -24,3 +26,8 @@ urlpatterns = [
     path('', include('base.urls')),
     path('api/', include('base.api.urls'))
 ]
+
+# On Vercel (serverless) we route all requests to Django. Serving static via
+# Django's staticfiles URLs (when DEBUG=True) is a reliable fallback.
+if settings.DEBUG:
+    urlpatterns += staticfiles_urlpatterns()
