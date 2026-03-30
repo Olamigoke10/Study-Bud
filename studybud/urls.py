@@ -18,11 +18,38 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.http import HttpResponse, HttpResponseNotFound
+from django.views.static import serve
+from pathlib import Path
+
+
+def serve_spa_index(_request):
+    """
+    Serve the built React SPA entrypoint.
+    This keeps the app working even when Vercel routes all requests to Django.
+    """
+    index_path = Path(settings.BASE_DIR) / "frontend" / "dist" / "index.html"
+    if not index_path.exists():
+        return HttpResponseNotFound("SPA build not found. Deploy build did not generate frontend/dist.")
+    return HttpResponse(index_path.read_text(encoding="utf-8"), content_type="text/html")
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # SPA routes (served by React build)
+    path('', serve_spa_index),
+    path('login/', serve_spa_index),
+    path('register/', serve_spa_index),
+    path('activity/', serve_spa_index),
+    path('room/<str:pk>/', serve_spa_index),
+    path('profile/<str:pk>/', serve_spa_index),
+
+    # Serve built SPA assets directly from Django if platform routing does not.
+    path('assets/<path:path>', serve, {'document_root': Path(settings.BASE_DIR) / 'frontend' / 'dist' / 'assets'}),
+    path('favicon.svg', serve, {'document_root': Path(settings.BASE_DIR) / 'frontend' / 'dist', 'path': 'favicon.svg'}),
+    path('icons.svg', serve, {'document_root': Path(settings.BASE_DIR) / 'frontend' / 'dist', 'path': 'icons.svg'}),
+
     path('', include('base.urls')),
     path('api/', include('base.api.urls'))
 ]
