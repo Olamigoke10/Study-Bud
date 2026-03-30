@@ -66,7 +66,8 @@ export default function Room() {
 
       setRoom((prev) => {
         if (!prev) return prev;
-        const nextMessages = [...(prev.messages ?? []), created];
+        // API orders messages newest-first; prepend so our render (oldest -> newest) stays correct.
+        const nextMessages = [created, ...(prev.messages ?? [])];
         return { ...prev, messages: nextMessages };
       });
       setMessageBody("");
@@ -100,12 +101,10 @@ export default function Room() {
 
             <div className="max-h-[420px] overflow-auto pr-2">
               <div className="space-y-3">
-                {(room.messages ?? []).map((m) => (
+                {[...(room.messages ?? [])].reverse().map((m) => (
                   <div key={m.id} className="rounded bg-zinc-800/40 p-3">
                     <div className="flex items-baseline justify-between gap-4">
-                      <div className="text-sm font-semibold text-zinc-100">
-                        {m.user.username}
-                      </div>
+                      <div className="text-sm font-semibold text-zinc-100">{m.user.username}</div>
                       <div className="text-xs text-zinc-500">{m.created}</div>
                     </div>
                     <div className="mt-1 whitespace-pre-wrap text-sm text-zinc-200">{m.body}</div>
